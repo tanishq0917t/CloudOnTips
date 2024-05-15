@@ -33,29 +33,11 @@
 
 
   <script>
-    var accName;
-    function hello()
-    {
-      $.ajax({
-        'url': 'getData',
-        'type': 'POST',
-        'success': function (response) {
-          accName = response;
-          document.getElementById("accName").innerHTML = accName;
-        },
-        'error': function (response) {
-          alert("me");
-        }
-      });
-    }
-    function showAllAssignment()
-    {
-      window.location.replace("/st_assignments");
-    }
+    
   </script>
 </head>
 
-<body onload="hello()">
+<body>
 
   <!-- ======= Header ======= -->
   <header id="header" class="header fixed-top d-flex align-items-center">
@@ -63,7 +45,7 @@
     <div class="d-flex align-items-center justify-content-between">
       <a href="/" class="logo d-flex align-items-center">
         <img src="{{ url_for('static', filename='img/IPLogo.png') }}" alt="">
-        <span class="d-none d-lg-block">Smart Teacher</span>
+        <span class="d-none d-lg-block">Cloud on Tips</span>
       </a>
       <i class="bi bi-list toggle-sidebar-btn"></i>
     </div><!-- End Logo -->
@@ -134,18 +116,25 @@
       <li class="nav-heading">Pages</li>
 
       <li class="nav-item">
-        <a class="nav-link collapsed" href="/st_assignments">
-          <i class="bi bi-person"></i>
-          <span>Assignments</span>
+        <a class="nav-link collapsed" href="/servers">
+          <i class="bi bi-hdd-rack"></i>
+          <span>My Servers</span>
         </a>
       </li><!-- End Profile Page Nav -->
       
       <li class="nav-item">
-        <a class="nav-link collapsed" href="/rankLists">
-          <i class="bi bi-person"></i>
-          <span>Rank Lists</span>
+        <a class="nav-link collapsed" href="/newServer">
+          <i class="bi bi-database-add"></i>
+          <span>New Server</span>
         </a>
       </li><!-- End Profile Page Nav -->
+
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="/pems">
+          <i class="bi bi-file-earmark-easel"></i>
+          <span>My PEM</span>
+        </a>
+      </li><!-- End Register Page Nav -->
 
       <li class="nav-item">
         <a class="nav-link collapsed" href="/logout">
@@ -160,76 +149,38 @@
   <main id="main" class="main">
 
     <div class="pagetitle">
-      <h1>Student's Dashboard</h1>
+      <h1>Tanishq's Dashboard</h1>
     </div><!-- End Page Title -->
     <section class="section dashboard">
       <div style="display: flex;" id="actionDiv">
         <div class="card" style="width: 18rem;">
           <div class="card-body">
             <br>
-            <center><img src="{{ url_for('static', filename='assets/img/status.png') }}" height="175px" width="175px"></center><br>
-            <center><button type="button" class="btn btn-primary" onclick="showAllAssignment()">View All Assignments</button><br><br></center>
-            <center>Click to view All Assignments</center>
+            <center><img src="{{ url_for('static', filename='assets/img/server.png') }}" height="175px" width="175px"></center><br>
+            <center><button type="button" class="btn btn-primary" onclick="">My Servers</button><br><br></center>
+            <center>Access Your Servers</center>
           </div>
         </div>
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
         <div class="card" style="width: 18rem;">
           <div class="card-body">
             <br>
-            <center><img src="{{ url_for('static', filename='assets/img/viewAll.png') }}" height="175px" width="175px"></center><br>
-            <center><button type="button" class="btn btn-primary" onclick="showResults()">View My Results</button><br><br></center>
-            <center>Click to view results</center>
+            <center><img src="{{ url_for('static', filename='assets/img/newServer.png') }}" height="175px" width="175px"></center><br>
+            <center><button type="button" class="btn btn-primary" onclick="">Create New VPS</button><br><br></center>
+            <center>Click to create new virtual private server</center>
+          </div>
+        </div>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <div class="card" style="width: 18rem;">
+          <div class="card-body">
+            <br>
+            <center><img src="{{ url_for('static', filename='assets/img/pemPage.png') }}" height="175px" width="175px"></center><br>
+            <center><button type="button" class="btn btn-primary" onclick="">Download PEM Files</button><br><br></center>
+            <center>Click to download PEM files of existing servers</center>
           </div>
         </div>
       </div>  
     </section>
-    <div id="newAssignment" style="display: none;">
-      <h1 id="headName"></h1>
-      <div class="col-sm-2">
-        <input type="text" class="form-control" id="assName" placeholder="Enter Assignment Name" oninput="validateSubButton()">
-      </div>
-      Note: Question, Input and Output names should be unique<br><br>
-      <div id="addQues">
-        <button type="button" class="btn btn-primary" onclick="addQuestion()" >Add Question</button> &nbsp;&nbsp;&nbsp;
-        <button type="button" class="btn btn-primary" id="submitAssignmentButton" onclick="submitAssignment()" disabled>Submit</button>
-        <br><br>
-      </div>
-      <div id="subQues" style="display: none;">
-        <button type="button" class="btn btn-primary" onclick="saveQuestion()">Save Question</button> &nbsp;&nbsp;&nbsp;
-        <button type="button" class="btn btn-primary" onclick="discQuestion()">Discard Question</button>
-        <br><br>
-        <div class="col-sm-2">
-          <input type="text" class="form-control" id="quesName" placeholder="Enter Question Name"><br>
-        </div>
-        <div class="col-sm-10">
-          <textarea class="form-control" id="quesPrompt" rows="3" placeholder="Enter Question description"></textarea><br>
-        </div>
-        <div class="col-sm-6">
-          <label for="formFile" class="form-label">Select Input File</label>
-          <input class="form-control" type="file" id="inpFile" accept=".txt"><br>
-        </div>
-        <div class="col-sm-6">
-          <label for="formFile" class="form-label">Select Output File</label>
-          <input class="form-control" type="file" id="outFile" accept=".txt">
-        </div>
-      </div>
-      
-      <div id="tableDiv" style="display: none;">
-        <h3>Questions</h3>
-        <table class="table" id="questionTable" style="display: none;">
-          <thead class="thead-dark">
-            <tr>
-              <th scope="col" style="padding: 15px;">#</th>
-              <th scope="col" style="padding: 15px;">Question Name</th>
-              <th scope="col" style="padding: 15px;">Input File</th>
-              <th scope="col" style="padding: 15px;">Output File</th>
-            </tr>
-          </thead>
-          <tbody>
-          </tbody>
-        </table>
-      </div>
-    </div>
   </main><!-- End #main -->
 
 
