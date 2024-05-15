@@ -16,10 +16,11 @@ class MongoCollection:
             data=json.load(config)
         username = data['mongoDB']['username']
         password = data['mongoDB']['password']
+        cluster = data['mongoDB']['clusterID']
 
         encoded_username = quote_plus(username)
         encoded_password = quote_plus(password)
-        uri=f"mongodb+srv://{encoded_username}:{encoded_password}@tanishq.5tbek3n.mongodb.net/"
+        uri=f"mongodb+srv://{encoded_username}:{encoded_password}@{cluster}.mongodb.net/"
 
         client = MongoClient(uri, server_api=ServerApi('1'))
 
