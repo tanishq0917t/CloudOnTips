@@ -1,7 +1,7 @@
 from flask import *
 from flask_session import Session
 from mongoConnection import MongoCollection
-import time
+from createEC2 import CreateEC2
 
 app = Flask(__name__)
 app.config["SESSION_PERMANENT"] = False
@@ -19,10 +19,12 @@ def login():
 
 @app.route("/myvps")
 def myvps():
+    if not session.get("name"): return redirect("/login")
     return render_template("myvps.html")
 
 @app.route("/newVps")
 def newVps():
+    if not session.get("name"): return redirect("/login")
     return render_template("newVps.html")
 
 @app.route("/getData",methods=['POST'])
@@ -51,6 +53,26 @@ def auth():
             return "1"
         else: return "-1"
 
+
+@app.route("/configureNewVPS",methods=["POST"])
+def configureNewVPS():
+    if request.method=="POST":
+        request_data = request.json  # Parse JSON data
+        name = request_data.get('name')
+        storage = request_data.get('storage')
+        os = request_data.get('os')
+        inst = request_data.get('inst')
+        soft_list = request_data.get('list')
+        obj=CreateEC2()
+        data={
+            'serverName':name,
+            'serverStorage':storage,
+            'serverOS':os,
+            'serverType':inst,
+            'serverSoftwares':soft_list
+        }
+        instanceId=obj.createNewEC2(data)
+        return instanceId
 
 
 if __name__ == '__main__':

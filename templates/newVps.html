@@ -67,21 +67,34 @@
                 return;
             }
             var os=null;
-            if(document.getElementById("opt1").checked) os="AML";
-            else if(document.getElementById("opt2").checked) os="U24";
-            else os="U22";
-            alert(os);
+            if(document.getElementById("opt1").checked) os=document.getElementById("opt1").value;
+            else if(document.getElementById("opt2").checked) os=document.getElementById("opt2").value;
+            else os=document.getElementById("opt3").value;
+            // alert(os);
             var inst=null;
             if(document.getElementById("instance1").checked) inst="micro";
             else inst="medium";
-            alert(inst);
+            // alert(inst);
             var softList=[]
             if(document.getElementById("cpp").checked) softList.push("CPP");
             if(document.getElementById("java").checked) softList.push("JAVA");
             if(document.getElementById("python").checked) softList.push("PYTHON");
-            alert(softList);
+            // alert(softList);
             $.ajax({
-                
+                'url' :'configureNewVPS',
+                'type':'POST',
+                'data':JSON.stringify({
+                    'name':name,
+                    'storage':storage,
+                    'os':os,
+                    'inst':inst,
+                    'list':softList
+                }),
+                contentType:'application/json',
+                'success':function(response){
+                    alert(response);
+                    window.location.replace("/");
+                }
             });
         }
     </script>
