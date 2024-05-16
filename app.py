@@ -21,6 +21,10 @@ def login():
 def myvps():
     return render_template("myvps.html")
 
+@app.route("/newVps")
+def newVps():
+    return render_template("newVps.html")
+
 @app.route("/getData",methods=['POST'])
 def getData():
     user=session.get('name')

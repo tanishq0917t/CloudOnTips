@@ -34,6 +34,9 @@
     function goToMyServers() {
       window.location.replace('myvps')
     }
+    function goToNewServer() {
+      window.location.replace('newVps')
+    }
     var accName;
     function hello()
     {
@@ -185,7 +188,7 @@
             <br>
             <center><img src="{{ url_for('static', filename='assets/img/newServer.png') }}" height="175px"
                 width="175px"></center><br>
-            <center><button type="button" class="btn btn-primary" onclick="">Create New VPS</button><br><br></center>
+            <center><button type="button" class="btn btn-primary" onclick="goToNewServer()">Create New VPS</button><br><br></center>
             <center>Click to create new virtual private server</center>
           </div>
         </div>
