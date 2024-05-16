@@ -38,8 +38,7 @@
       window.location.replace('newVps')
     }
     var accName;
-    function hello()
-    {
+    function hello() {
       $.ajax({
         'url': 'getData',
         'type': 'POST',
@@ -142,7 +141,7 @@
       </li><!-- End Profile Page Nav -->
 
       <li class="nav-item">
-        <a class="nav-link collapsed" href="/newServer">
+        <a class="nav-link collapsed" href="/newVps">
           <i class="bi bi-database-add"></i>
           <span>New Server</span>
         </a>
@@ -188,7 +187,8 @@
             <br>
             <center><img src="{{ url_for('static', filename='assets/img/newServer.png') }}" height="175px"
                 width="175px"></center><br>
-            <center><button type="button" class="btn btn-primary" onclick="goToNewServer()">Create New VPS</button><br><br></center>
+            <center><button type="button" class="btn btn-primary" onclick="goToNewServer()">Create New
+                VPS</button><br><br></center>
             <center>Click to create new virtual private server</center>
           </div>
         </div>

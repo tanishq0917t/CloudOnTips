@@ -47,51 +47,48 @@
             });
             //Get list of VPS
         }
-        function createVPS()
-        {
-            var name=document.getElementById("vpsName").value.trim();
-            if(name.length==0){
+        function createVPS() {
+            var name = document.getElementById("vpsName").value.trim();
+            if (name.length == 0) {
                 alert("VPS name is required");
                 return;
             }
-            var storage=document.getElementById("vpsStorage").value;
-            if(storage=='')
-            {
+            var storage = document.getElementById("vpsStorage").value;
+            if (storage == '') {
                 alert("VPS storage is required");
                 return;
             }
-            storage=Number.parseInt(storage);
-            if(storage<10 || storage>30)
-            {
+            storage = Number.parseInt(storage);
+            if (storage < 10 || storage > 30) {
                 alert("VPS storage range is 10GB to 30GB");
                 return;
             }
-            var os=null;
-            if(document.getElementById("opt1").checked) os=document.getElementById("opt1").value;
-            else if(document.getElementById("opt2").checked) os=document.getElementById("opt2").value;
-            else os=document.getElementById("opt3").value;
+            var os = null;
+            if (document.getElementById("opt1").checked) os = document.getElementById("opt1").value;
+            else if (document.getElementById("opt2").checked) os = document.getElementById("opt2").value;
+            else os = document.getElementById("opt3").value;
             // alert(os);
-            var inst=null;
-            if(document.getElementById("instance1").checked) inst="micro";
-            else inst="medium";
+            var inst = null;
+            if (document.getElementById("instance1").checked) inst = "micro";
+            else inst = "medium";
             // alert(inst);
-            var softList=[]
-            if(document.getElementById("cpp").checked) softList.push("CPP");
-            if(document.getElementById("java").checked) softList.push("JAVA");
-            if(document.getElementById("python").checked) softList.push("PYTHON");
+            var softList = []
+            if (document.getElementById("cpp").checked) softList.push("CPP");
+            if (document.getElementById("java").checked) softList.push("JAVA");
+            if (document.getElementById("python").checked) softList.push("PYTHON");
             // alert(softList);
             $.ajax({
-                'url' :'configureNewVPS',
-                'type':'POST',
-                'data':JSON.stringify({
-                    'name':name,
-                    'storage':storage,
-                    'os':os,
-                    'inst':inst,
-                    'list':softList
+                'url': 'configureNewVPS',
+                'type': 'POST',
+                'data': JSON.stringify({
+                    'name': name,
+                    'storage': storage,
+                    'os': os,
+                    'inst': inst,
+                    'list': softList
                 }),
-                contentType:'application/json',
-                'success':function(response){
+                contentType: 'application/json',
+                'success': function (response) {
                     alert(response);
                     window.location.replace("/");
                 }
@@ -180,14 +177,14 @@
             <li class="nav-heading">Pages</li>
 
             <li class="nav-item">
-                <a class="nav-link collapsed" href="/servers">
+                <a class="nav-link collapsed" href="/myvps">
                     <i class="bi bi-hdd-rack"></i>
                     <span>My Servers</span>
                 </a>
             </li><!-- End Profile Page Nav -->
 
             <li class="nav-item">
-                <a class="nav-link collapsed" href="/newServer">
+                <a class="nav-link collapsed" href="/newVps">
                     <i class="bi bi-database-add"></i>
                     <span>New Server</span>
                 </a>
@@ -217,7 +214,8 @@
         </div><!-- End Page Title -->
         <section class="section dashboard">
             <div class="col-sm-2">
-                <b>VPS Name:</b> <input type="text" class="form-control" id="vpsName" placeholder="Enter VPS Name (Required)"><br>
+                <b>VPS Name:</b> <input type="text" class="form-control" id="vpsName"
+                    placeholder="Enter VPS Name (Required)"><br>
                 <b>VPS Storage: (Max 30 GB)</b> <input type="number" class="form-control" id="vpsStorage"
                     placeholder="Enter VPS Storage Size" max="30" min="10"><br>
             </div>
@@ -233,7 +231,7 @@
                 <label class="form-check-label">
                     Ubuntu Server 24.04 LTS
                 </label>
-            </div>  
+            </div>
             <div class="form-check">
                 <input class="form-check-input" type="radio" name="ami" id="opt3" value="ami-05e00961530ae1b55" checked>
                 <label class="form-check-label">
@@ -257,23 +255,23 @@
             <div class="form-check">
                 <input class="form-check-input" type="checkbox" value="" id="cpp">
                 <label class="form-check-label" for="flexCheckDefault">
-                  C & C++
+                    C & C++
                 </label>
-              </div>
-              <div class="form-check">
+            </div>
+            <div class="form-check">
                 <input class="form-check-input" type="checkbox" value="" id="java">
                 <label class="form-check-label" for="flexCheckChecked">
-                  Java
+                    Java
                 </label>
-              </div>
-              <div class="form-check">
+            </div>
+            <div class="form-check">
                 <input class="form-check-input" type="checkbox" value="" id="python">
                 <label class="form-check-label" for="flexCheckChecked">
-                  Python
+                    Python
                 </label>
-              </div>
-              <br>
-              <button type="button" class="btn btn-primary" onclick="createVPS()">Launch VPS</button>
+            </div>
+            <br>
+            <button type="button" class="btn btn-primary" onclick="createVPS()">Launch VPS</button>
         </section>
     </main><!-- End #main -->
 
