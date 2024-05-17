@@ -32,7 +32,7 @@ class CreateEC2:
             }
         }]
         key_pair_response = ec2.create_key_pair(KeyName=key_name)
-        pem_file_path = f"{key_name}.pem"
+        pem_file_path = f"pems/{data['user'].split('@')[0]}/{key_name}.pem"
         with open(pem_file_path, "w") as pem_file:
             pem_file.write(key_pair_response['KeyMaterial'])
         instance_response = ec2.run_instances(
@@ -56,4 +56,10 @@ class CreateEC2:
             ]
         )
         instance_id = instance_response['Instances'][0]['InstanceId']
-        return instance_id
+        lst=[]
+        lst.append(instance_id)
+        ec2.get_waiter('instance_running').wait(InstanceIds=lst)
+        instance_info = ec2.describe_instances(InstanceIds=lst)
+        instance = instance_info['Reservations'][0]['Instances'][0]
+        public_ip = instance.get('PublicIpAddress')
+        return (instance_id,public_ip)

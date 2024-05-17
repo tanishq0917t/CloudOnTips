@@ -9,7 +9,8 @@
     <link rel="stylesheet" href="https://unpkg.com/bs-brain@2.0.4/components/logins/login-9/assets/css/login-9.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script>
-        $(document).ready(function(){
+        var otp;
+        $(document).ready(function () {
             $("#loadingOverlay").hide();
         });
         function auth() {
@@ -26,9 +27,42 @@
                 'success': function (response) {
                     $("#loadingOverlay").hide();
                     if (response == -1) alert("Invalid Credentials");
-                    else  window.location.replace('/');
+                    else {
+                        document.getElementById("otpDiv").style.display = 'inline';
+                        document.getElementById("userDiv").style.display = 'none';
+                        document.getElementById("passDiv").style.display = 'none';
+                        document.getElementById("btn1Div").style.display = 'none';
+                        document.getElementById("btn2Div").style.display = 'inline';
+                        $.ajax({
+                            'url': 'sendOtp',
+                            'type': 'post',
+                            'data': {
+                                'user': user
+                            },
+                            'success': function (response) {
+                                otp = Number.parseInt(response);
+                            }
+                        });
+                    }
                 }
             })
+        }
+        function auth2() {
+            var enteredOtp = document.getElementById("otp").value;
+            if (otp == enteredOtp) {
+                $.ajax({
+                    'url': 'authDone',
+                    'type': 'POST',
+                    'data': { 'user': document.getElementById("email").value },
+                    'success': function (response) {
+                        window.location.replace("/");
+                    }
+                });
+            }
+            else {
+                alert("Invalid OTP, try again later...");
+                window.location.replace("/");
+            }
         }
     </script>
     <style>
@@ -39,8 +73,10 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black overlay */
-            z-index: 9999; /* Ensure overlay is on top of other content */
+            background-color: rgba(0, 0, 0, 0.5);
+            /* Semi-transparent black overlay */
+            z-index: 9999;
+            /* Ensure overlay is on top of other content */
         }
 
         .loading {
@@ -48,7 +84,8 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            z-index: 10000; /* Ensure loading GIF is on top of overlay */
+            z-index: 10000;
+            /* Ensure loading GIF is on top of overlay */
         }
     </style>
 </head>
@@ -57,7 +94,7 @@
     <div id="loadingOverlay" class="loading-overlay">
         <!-- Loading GIF -->
         <div class="loading">
-            <img src="static/assets/img/bubbles.gif" alt="Loading..." />
+            <img src="static/assets/img/ll.gif" alt="Loading..." />
         </div>
     </div>
     <!-- Login 9 - Bootstrap Brain Component -->
@@ -71,8 +108,9 @@
                             <hr class="border-primary-subtle mb-4">
                             <h2 class="h1 mb-4">We make virtual private servers available to you on your fingertips.
                             </h2>
-                            <p class="lead mb-5">Want a VPS? Don't have enough<br> Cloud Knowledge?<br> Why to worry, we are
-                                 here for you :)</p>
+                            <p class="lead mb-5">Want a VPS? Don't have enough<br> Cloud Knowledge?<br> Why to worry, we
+                                are
+                                here for you :)</p>
                             <div class="text-endx">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor"
                                     class="bi bi-grip-horizontal" viewBox="0 0 16 16">
@@ -96,33 +134,38 @@
                             </div>
                             <form action="#!">
                                 <div class="row gy-3 overflow-hidden">
-                                    <div class="col-12">
+                                    <div class="col-12" id="userDiv">
                                         <div class="form-floating mb-3">
                                             <input type="email" class="form-control" name="email" id="email"
                                                 placeholder="name@example.com" required>
                                             <label for="email" class="form-label">Email</label>
                                         </div>
                                     </div>
-                                    <div class="col-12">
+                                    <div class="col-12" id="passDiv">
                                         <div class="form-floating mb-3">
                                             <input type="password" class="form-control" name="password" id="password"
                                                 value="" placeholder="Password" required>
                                             <label for="password" class="form-label">Password</label>
                                         </div>
                                     </div>
-                                    <div class="col-12">
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" value="" name="remember_me"
-                                                id="remember_me">
-                                            <label class="form-check-label text-secondary" for="remember_me">
-                                                Keep me logged in
-                                            </label>
+                                    <div class="col-12" style="display: none;" id="otpDiv">
+                                        <div class="form-floating mb-3">
+                                            <input type="password" class="form-control" name="otp" id="otp" value=""
+                                                placeholder="Enter OTP sent to your registered email id" required>
+                                            <label for="password" class="form-label">Enter OTP sent to your registered
+                                                email</label>
                                         </div>
                                     </div>
-                                    <div class="col-12">
+                                    <div class="col-12" id="btn1Div">
                                         <div class="d-grid">
                                             <button class="btn btn-primary btn-lg" type="button" onclick="auth()">Log in
                                                 now</button>
+                                        </div>
+                                    </div>
+                                    <div class="col-12" id="btn2Div" style="display: none;">
+                                        <div class="d-grid">
+                                            <button class="btn btn-primary btn-lg" type="button"
+                                                onclick="auth2()">Verify OTP</button>
                                         </div>
                                     </div>
                                 </div>

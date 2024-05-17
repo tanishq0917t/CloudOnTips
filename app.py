@@ -2,6 +2,9 @@ from flask import *
 from flask_session import Session
 from mongoConnection import MongoCollection
 from createEC2 import CreateEC2
+from ConfigureEC2 import EC2Configurations
+from sendMail import SendMail
+import random
 
 app = Flask(__name__)
 app.config["SESSION_PERMANENT"] = False
@@ -27,10 +30,23 @@ def newVps():
     if not session.get("name"): return redirect("/login")
     return render_template("newVps.html")
 
+@app.route("/pems")
+def pems():
+    if not session.get("name"): return redirect("/login")
+    return render_template("mypems.html")
+
 @app.route("/getData",methods=['POST'])
 def getData():
     user=session.get('name')
     return user
+
+@app.route("/authDone",methods=['POST'])
+def authDone():
+    if request.method=="POST":
+        user=request.form['user']
+        session["name"] = user
+        return user
+
 
 @app.route("/logout")
 def logout():
@@ -49,7 +65,6 @@ def auth():
         if data==None:
             return "-1"
         if data['pass']==pwd:
-            session["name"] = user
             return "1"
         else: return "-1"
 
@@ -63,16 +78,99 @@ def configureNewVPS():
         os = request_data.get('os')
         inst = request_data.get('inst')
         soft_list = request_data.get('list')
+        accName = request_data.get('accName')
         obj=CreateEC2()
         data={
             'serverName':name,
             'serverStorage':storage,
             'serverOS':os,
             'serverType':inst,
-            'serverSoftwares':soft_list
+            'serverSoftwares':soft_list,
+            'user':accName
         }
-        instanceId=obj.createNewEC2(data)
+        instanceId,publicIP=obj.createNewEC2(data)
+        connection=MongoCollection()
+        collection=connection.getCollection('VPSDetails')
+        collection.insert_one({
+            'user':accName,
+            'vpsName':name,
+            'instanceId':instanceId,
+            'os':os,
+            'status':'Running',
+            'publicIP':publicIP
+        })
         return instanceId
+
+@app.route("/getVPSData",methods=["POST"])
+def getVPSData():
+    if request.method=="POST":
+        user=request.form['user']
+        connection=MongoCollection()
+        collection=connection.getCollection("VPSDetails")
+        pems=collection.find({'user':user})
+        lst=[]
+        for i in pems:
+            d=dict()
+            d['name']=i['vpsName']
+            d['os']=i['os']
+            d['status']=i['status']
+            d['publicIP']=i['publicIP']
+            lst.append(d)
+        print("sending data")
+        return {'pems':lst}
+
+
+@app.route("/stopInstance",methods=["POST"])
+def stopInstance():
+    if request.method=="POST":
+        user=request.form['user']
+        vpsName=request.form['vpsName']
+        ec2=EC2Configurations()
+        response=ec2.stopInstance(user,vpsName)
+        return response
+        
+
+@app.route("/startInstance",methods=["POST"])
+def startInstance():
+    if request.method=="POST":
+        user=request.form['user']
+        vpsName=request.form['vpsName']
+        ec2=EC2Configurations()
+        response=ec2.startInstance(user,vpsName)
+        return response
+        
+
+@app.route("/deleteInstance",methods=["POST"])
+def deleteInstance():
+    if request.method=="POST":
+        user=request.form['user']
+        vpsName=request.form['vpsName']
+        ec2=EC2Configurations()
+        response=ec2.deleteInstance(user,vpsName)
+        return response
+
+@app.route("/downloadPEM",methods=["POST"])        
+def downloadPEM():
+    if request.method=="POST":
+        user=request.form['user']
+        file=request.form['file']
+        sendEmail=SendMail()
+        subject="PEM File"
+        body=f"Hi {user},<br>Please find below attached PEM file as per your request<br><br>Thanks & Regards<br>Cloud On Tips"
+        sendEmail.mail(user,subject,body,file)
+        return "Done"
+    
+@app.route("/sendOtp",methods=["POST"])
+def sendOtp():
+    if request.method=="POST":
+        user=request.form['user']
+        otp=str(random.random())[2:8]
+        print(otp)
+        sendEmail=SendMail()
+        subject="OTP Verification"
+        body=f"Hi {user},<br>Please find below OTP: {otp} for your login request.<br><br>Thanks & Regards<br>Cloud On Tips"
+        sendEmail.mail(user,subject,body)
+        return otp
 
 
 if __name__ == '__main__':

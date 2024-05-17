@@ -32,6 +32,9 @@
     <link href="{{ url_for('static', filename='assets/css/style1.css') }}" rel="stylesheet">
     <script>
         var accName;
+        $(document).ready(function () {
+            $("#loadingOverlay").hide();
+        });
         function hello() {
             //Get user Data
             $.ajax({
@@ -46,6 +49,19 @@
                 }
             });
             //Get list of VPS
+        }
+        function showNotification() {
+            var notification = document.getElementById("notification");
+            notification.style.display = "block";
+            notification.classList.add("animated");
+            setTimeout(function () {
+                notification.style.display = "none";
+                notification.classList.remove("animated");
+                setTimeout(function () {
+                    window.location.replace("/");
+                }, 1000);
+            }, 2000); // Hide after 3 seconds
+
         }
         function createVPS() {
             var name = document.getElementById("vpsName").value.trim();
@@ -77,6 +93,7 @@
             if (document.getElementById("java").checked) softList.push("JAVA");
             if (document.getElementById("python").checked) softList.push("PYTHON");
             // alert(softList);
+            $("#loadingOverlay").show();
             $.ajax({
                 'url': 'configureNewVPS',
                 'type': 'POST',
@@ -85,19 +102,88 @@
                     'storage': storage,
                     'os': os,
                     'inst': inst,
-                    'list': softList
+                    'list': softList,
+                    'accName': accName
                 }),
                 contentType: 'application/json',
                 'success': function (response) {
-                    alert(response);
-                    window.location.replace("/");
+                    $("#loadingOverlay").hide();
+                    showNotification();
                 }
             });
         }
     </script>
+    <style>
+        .notification {
+            position: fixed;
+            top: 50px;
+            /* Adjust this value for padding from the top */
+            left: 40%;
+            transform: translateX(-50%);
+            z-index: 1050;
+            max-width: 400px;
+            padding: 15px;
+            border-radius: 10px;
+            background-color: #4CAF50;
+            color: white;
+            display: none;
+        }
+
+        .notification-content {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .notification.animated {
+            animation: slideDown 0.5s ease-out forwards;
+        }
+
+        @keyframes slideDown {
+            0% {
+                transform: translateY(-100%);
+            }
+
+            100% {
+                transform: translateY(0);
+            }
+        }
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            /* Semi-transparent black overlay */
+            z-index: 9999;
+            /* Ensure overlay is on top of other content */
+        }
+
+        .loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10000;
+            /* Ensure loading GIF is on top of overlay */
+        }
+    </style>
 </head>
 
 <body onload="hello()">
+    <div class="notification" id="notification">
+        <div class="container notification-content">
+            VPS Created
+        </div>
+    </div>
+
+    <div id="loadingOverlay" class="loading-overlay">
+        <!-- Loading GIF -->
+        <div class="loading">
+            <img src="static/assets/img/ll.gif" alt="Loading..." />
+        </div>
+    </div>
 
     <!-- ======= Header ======= -->
     <header id="header" class="header fixed-top d-flex align-items-center">
@@ -213,6 +299,7 @@
             <h1>Create a new VPS</h1>
         </div><!-- End Page Title -->
         <section class="section dashboard">
+            <b>Note: Creating a VPS might take 30-40 seconds, please do not refreshing while loading...</b><br><br>
             <div class="col-sm-2">
                 <b>VPS Name:</b> <input type="text" class="form-control" id="vpsName"
                     placeholder="Enter VPS Name (Required)"><br>

@@ -32,10 +32,13 @@
   <link href="{{ url_for('static', filename='assets/css/style1.css') }}" rel="stylesheet">
   <script>
     function goToMyServers() {
-      window.location.replace('myvps')
+      window.location.replace('myvps');
     }
     function goToNewServer() {
-      window.location.replace('newVps')
+      window.location.replace('newVps');
+    }
+    function goToPEMFiles(){
+      window.location.replace('pems');
     }
     var accName;
     function hello() {
@@ -198,7 +201,7 @@
             <br>
             <center><img src="{{ url_for('static', filename='assets/img/pemPage.png') }}" height="175px" width="175px">
             </center><br>
-            <center><button type="button" class="btn btn-primary" onclick="">Download PEM Files</button><br><br>
+            <center><button type="button" class="btn btn-primary" onclick="goToPEMFiles()">Download PEM Files</button><br><br>
             </center>
             <center>Click to download PEM files of existing servers</center>
           </div>

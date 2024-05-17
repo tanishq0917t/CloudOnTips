@@ -71,51 +71,20 @@
                 }
             });
         }
-        function startInstance(instanceName)
+        function downloadPem(user,filename)
         {
             $("#loadingOverlay").show();
+            filename=filename+"-key-pair.pem";
             $.ajax({
-                'url':'startInstance',
+                'url':'downloadPEM',
                 'type':'POST',
                 'data':{
-                    'user':accName,
-                    'vpsName':instanceName
+                    'user':user,
+                    'file':filename
                 },
                 'success':function(response){
                     $("#loadingOverlay").hide();
-                    window.location.replace('myvps');
-                }
-            });
-        }
-        function stopInstance(instanceName)
-        {
-            $("#loadingOverlay").show();
-            $.ajax({
-                'url':'stopInstance',
-                'type':'POST',
-                'data':{
-                    'user':accName,
-                    'vpsName':instanceName
-                },
-                'success':function(response){
-                    $("#loadingOverlay").hide();
-                    window.location.replace('myvps');
-                }
-            });
-        }
-        function deleteInstance(instanceName)
-        {
-            $("#loadingOverlay").show();
-            $.ajax({
-                'url':'deleteInstance',
-                'type':'POST',
-                'data':{
-                    'user':accName,
-                    'vpsName':instanceName
-                },
-                'success':function(response){
-                    $("#loadingOverlay").hide();
-                    window.location.replace('myvps');
+                    alert(response);
                 }
             });
         }
@@ -130,16 +99,7 @@
                     response=response['pems']
                     for(let i=0;i<response.length;i++)
                     {
-                        let status=response[i]['status'];
-                        if(status=="Stopped")
-                        {
-                            $("#assTable tbody").append("<tr><td style='text-align: center;'>"+(i+1)+"</td><td style='text-align: center;'>"+response[i]['name']+"</td><td style='text-align: center;'>"+response[i]['os']+"</td><td style='text-align: center;'>"+response[i]['status']+"</td><td style='text-align: center;'>-</td><td style='text-align: center;'>"+response[i]['name']+"-key-pair</td><td style='text-align: center;'><i class='fas fa-play' style='cursor:pointer;' title='Start' onclick='startInstance(\""+response[i]['name']+"\")'></i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class='fas fa-stop'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</i><i class='fas fa-times' style='cursor:pointer;' title='Delete' onclick='deleteInstance(\""+response[i]['name']+"\")'></i></td></tr>");
-                        }
-                        else
-                        {
-                            $("#assTable tbody").append("<tr><td style='text-align: center;'>"+(i+1)+"</td><td style='text-align: center;'>"+response[i]['name']+"</td><td style='text-align: center;'>"+response[i]['os']+"</td><td style='text-align: center;'>"+response[i]['status']+"</td><td style='text-align: center;'>"+response[i]['publicIP']+"</td><td style='text-align: center;'>"+response[i]['name']+"-key-pair</td><td style='text-align: center;'><i class='fas fa-play'></i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class='fas fa-stop' style='cursor:pointer;' title='Stop' onclick='stopInstance(\""+response[i]['name']+"\")'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</i><i class='fas fa-times' style='cursor:pointer;' title='Delete' onclick='deleteInstance(\""+response[i]['name']+"\")'></i></td></tr>");
-                        }
-                        
+                        $("#assTable tbody").append("<tr><td style='text-align: center;'>"+(i+1)+"</td><td style='text-align: center;'>"+response[i]['name']+"</td><td style='text-align: center;'>"+response[i]['name']+"-key-pair</td><td style='text-align: center;'><button type='button' class='btn btn-primary' onclick='downloadPem(\""+accName+"\",\""+response[i]['name']+"\")'>Mail PEM File</button></td></tr>");        
                     }
                     $("#loadingOverlay").hide();
                 }
@@ -266,22 +226,18 @@
     <main id="main" class="main">
 
         <div class="pagetitle">
-            <h1>My VPS</h1>
+            <h1>PEM File Store</h1>
         </div><!-- End Page Title -->
         <section class="section dashboard">
             <center>
-                <h2>List of VPS</h2>
+                <h2>List of PEM Files</h2>
                 <table class="table table-hover" id="assTable">
                     <thead>
                         <tr>
                             <th scope="col" style="text-align: center;">#</th>
                             <th scope="col" style="text-align: center;">VPS Name</th>
-                            <th scope="col" style="text-align: center;">Operating System</th>
-                            <th scope="col" style="text-align: center;">Status</th>
-                            <th scope="col" style="text-align: center;">Public IP Address</th>
                             <th scope="col" style="text-align: center;">PEM Name</th>
-                            <th scope="col" style="text-align: center;">Actions</th>
-                            
+                            <th scope="col" style="text-align: center;">Action</th>
                         </tr>
                     </thead>
                     <tbody>
