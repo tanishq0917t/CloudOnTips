@@ -112,7 +112,10 @@ def getVPSData():
         for i in pems:
             d=dict()
             d['name']=i['vpsName']
-            d['os']=i['os']
+            if i['os']=="ami-05e00961530ae1b55":
+                d['os']="Ubuntu 22.04"
+            elif i['os']=="ami-0f58b397bc5c1f2e8":
+                d['os']="Ubuntu 24.04"
             d['status']=i['status']
             d['publicIP']=i['publicIP']
             lst.append(d)

@@ -38,8 +38,10 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black overlay */
-            z-index: 9999; /* Ensure overlay is on top of other content */
+            background-color: rgba(0, 0, 0, 0.5);
+            /* Semi-transparent black overlay */
+            z-index: 9999;
+            /* Ensure overlay is on top of other content */
         }
 
         .loading {
@@ -47,16 +49,23 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            z-index: 10000; /* Ensure loading GIF is on top of overlay */
+            z-index: 10000;
+            /* Ensure loading GIF is on top of overlay */
         }
     </style>
     <script>
         var accName;
-        $(document).ready(function(){
+        var state = false;
+        $(document).ready(function () {
             $("#loadingOverlay").hide();
         });
-        function hello() 
-        {
+
+
+
+
+
+
+        function hello() {
             //Get user Data
             $.ajax({
                 'url': 'getData',
@@ -71,75 +80,123 @@
                 }
             });
         }
-        function startInstance(instanceName)
-        {
+        function startInstance(instanceName) {
             $("#loadingOverlay").show();
             $.ajax({
-                'url':'startInstance',
-                'type':'POST',
-                'data':{
-                    'user':accName,
-                    'vpsName':instanceName
+                'url': 'startInstance',
+                'type': 'POST',
+                'data': {
+                    'user': accName,
+                    'vpsName': instanceName
                 },
-                'success':function(response){
+                'success': function (response) {
                     $("#loadingOverlay").hide();
                     window.location.replace('myvps');
                 }
             });
         }
-        function stopInstance(instanceName)
-        {
+        function stopInstance(instanceName) {
             $("#loadingOverlay").show();
             $.ajax({
-                'url':'stopInstance',
-                'type':'POST',
-                'data':{
-                    'user':accName,
-                    'vpsName':instanceName
+                'url': 'stopInstance',
+                'type': 'POST',
+                'data': {
+                    'user': accName,
+                    'vpsName': instanceName
                 },
-                'success':function(response){
+                'success': function (response) {
                     $("#loadingOverlay").hide();
                     window.location.replace('myvps');
                 }
             });
         }
-        function deleteInstance(instanceName)
-        {
-            $("#loadingOverlay").show();
-            $.ajax({
-                'url':'deleteInstance',
-                'type':'POST',
-                'data':{
-                    'user':accName,
-                    'vpsName':instanceName
-                },
-                'success':function(response){
-                    $("#loadingOverlay").hide();
-                    window.location.replace('myvps');
-                }
-            });
-        }
-        function fillTable(name)
-        {
-            $("#loadingOverlay").show();
-            $.ajax({
-                'url':'getVPSData',
-                'type':'POST',
-                'data':{'user':name},
-                'success':function(response){
-                    response=response['pems']
-                    for(let i=0;i<response.length;i++)
-                    {
-                        let status=response[i]['status'];
-                        if(status=="Stopped")
-                        {
-                            $("#assTable tbody").append("<tr><td style='text-align: center;'>"+(i+1)+"</td><td style='text-align: center;'>"+response[i]['name']+"</td><td style='text-align: center;'>"+response[i]['os']+"</td><td style='text-align: center;'>"+response[i]['status']+"</td><td style='text-align: center;'>-</td><td style='text-align: center;'>"+response[i]['name']+"-key-pair</td><td style='text-align: center;'><i class='fas fa-play' style='cursor:pointer;' title='Start' onclick='startInstance(\""+response[i]['name']+"\")'></i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class='fas fa-stop'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</i><i class='fas fa-times' style='cursor:pointer;' title='Delete' onclick='deleteInstance(\""+response[i]['name']+"\")'></i></td></tr>");
+        function deleteInstance(instanceName) {
+            // Function to show the modal and return a Promise
+            function showModal() {
+                return new Promise((resolve, reject) => {
+                    // Show the modal
+                    $('#deleteModal').modal('show');
+
+                    // Handle the Delete button click
+                    $('#confirmDelete').one('click', function () {
+                        $('#deleteModal').modal('hide');
+                        resolve('delete');
+                    });
+
+                    // Handle the Cancel button click
+                    $('#cancelDelete').one('click', function () {
+                        $('#deleteModal').modal('hide');
+                        reject('cancel');
+                    });
+
+                    // Handle modal close with the 'X' button or backdrop click
+                    $('#deleteModal').one('click', function () {
+                        $('#deleteModal').modal('hide');
+                        reject('cancel');
+                    });
+                });
+            }
+
+            // Perform the action after modal interaction
+            async function performAction() {
+                try {
+                    const result = await showModal();
+                    //alert(`Action: ${result}`);
+                    $("#loadingOverlay").show();
+                    $.ajax({
+                        'url': 'deleteInstance',
+                        'type': 'POST',
+                        'data': {
+                            'user': accName,
+                            'vpsName': instanceName
+                        },
+                        'success': function (response) {
+                            $("#loadingOverlay").hide();
+                            window.location.replace('myvps');
                         }
-                        else
-                        {
-                            $("#assTable tbody").append("<tr><td style='text-align: center;'>"+(i+1)+"</td><td style='text-align: center;'>"+response[i]['name']+"</td><td style='text-align: center;'>"+response[i]['os']+"</td><td style='text-align: center;'>"+response[i]['status']+"</td><td style='text-align: center;'>"+response[i]['publicIP']+"</td><td style='text-align: center;'>"+response[i]['name']+"-key-pair</td><td style='text-align: center;'><i class='fas fa-play'></i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class='fas fa-stop' style='cursor:pointer;' title='Stop' onclick='stopInstance(\""+response[i]['name']+"\")'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</i><i class='fas fa-times' style='cursor:pointer;' title='Delete' onclick='deleteInstance(\""+response[i]['name']+"\")'></i></td></tr>");
+                    });
+                } catch (result) {
+
+                }
+            }
+
+            // Call performAction to show modal and handle subsequent actions
+            performAction();
+        }
+        // function deleteInstance(instanceName) {
+        //     tryModal();
+        //     alert(state);
+        //     // $("#loadingOverlay").show();
+        //     // $.ajax({
+        //     //     'url':'deleteInstance',
+        //     //     'type':'POST',
+        //     //     'data':{
+        //     //         'user':accName,
+        //     //         'vpsName':instanceName
+        //     //     },
+        //     //     'success':function(response){
+        //     //         $("#loadingOverlay").hide();
+        //     //         window.location.replace('myvps');
+        //     //     }
+        //     // });
+        // }
+        function fillTable(name) {
+            $("#loadingOverlay").show();
+            $.ajax({
+                'url': 'getVPSData',
+                'type': 'POST',
+                'data': { 'user': name },
+                'success': function (response) {
+                    response = response['pems']
+                    for (let i = 0; i < response.length; i++) {
+                        let status = response[i]['status'];
+                        if (status == "Stopped") {
+                            $("#assTable tbody").append("<tr><td style='text-align: center;'>" + (i + 1) + "</td><td style='text-align: center;'>" + response[i]['name'] + "</td><td style='text-align: center;'>" + response[i]['os'] + "</td><td style='text-align: center;'>" + response[i]['status'] + "</td><td style='text-align: center;'>-</td><td style='text-align: center;'>" + response[i]['name'] + "-key-pair</td><td style='text-align: center;'><i class='fas fa-play' style='cursor:pointer;' title='Start' onclick='startInstance(\"" + response[i]['name'] + "\")'></i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class='fas fa-stop'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</i><i class='fas fa-times' style='cursor:pointer;' title='Delete' onclick='deleteInstance(\"" + response[i]['name'] + "\")'></i></td></tr>");
                         }
-                        
+                        else {
+                            $("#assTable tbody").append("<tr><td style='text-align: center;'>" + (i + 1) + "</td><td style='text-align: center;'>" + response[i]['name'] + "</td><td style='text-align: center;'>" + response[i]['os'] + "</td><td style='text-align: center;'>" + response[i]['status'] + "</td><td style='text-align: center;'>" + response[i]['publicIP'] + "</td><td style='text-align: center;'>" + response[i]['name'] + "-key-pair</td><td style='text-align: center;'><i class='fas fa-play'></i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i class='fas fa-stop' style='cursor:pointer;' title='Stop' onclick='stopInstance(\"" + response[i]['name'] + "\")'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</i><i class='fas fa-times' style='cursor:pointer;' title='Delete' onclick='deleteInstance(\"" + response[i]['name'] + "\")'></i></td></tr>");
+                        }
+
                     }
                     $("#loadingOverlay").hide();
                 }
@@ -153,6 +210,26 @@
         <!-- Loading GIF -->
         <div class="loading">
             <img src="static/assets/img/ll.gif" alt="Loading..." />
+        </div>
+    </div>
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true"
+        itemid="deleteModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteModalLabel">Confirm Deletion</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" id="deleteModal">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to delete this VPS, this action cannot be undone?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal" id="cancelDelete">Cancel</button>
+                    <button type="button" class="btn btn-danger" id="confirmDelete">Delete</button>
+                </div>
+            </div>
         </div>
     </div>
     <!-- ======= Header ======= -->
@@ -281,11 +358,11 @@
                             <th scope="col" style="text-align: center;">Public IP Address</th>
                             <th scope="col" style="text-align: center;">PEM Name</th>
                             <th scope="col" style="text-align: center;">Actions</th>
-                            
+
                         </tr>
                     </thead>
                     <tbody>
-                        
+
                     </tbody>
                 </table>
             </center>
