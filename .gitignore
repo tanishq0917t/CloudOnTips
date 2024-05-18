@@ -3,4 +3,3 @@ __pycache__/
 config.json
 temp.py
 pems/
-sendMail.py
