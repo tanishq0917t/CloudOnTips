@@ -7,7 +7,7 @@ class SendMail:
             cls._instance = super().__new__(cls, *args, **kwargs)
         return cls._instance
     def mail(cls,user,subj,bdy,file=None):
-        yag = yagmail.SMTP('EMAIL ID', 'APP PASSWORD')
+        yag = yagmail.SMTP('**', '**')
         recipient = user
         subject = subj
         body = bdy

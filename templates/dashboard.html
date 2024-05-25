@@ -158,6 +158,13 @@
       </li><!-- End Register Page Nav -->
 
       <li class="nav-item">
+        <a class="nav-link collapsed" href="/serverless">
+          <i class="bi bi-file-earmark-easel"></i>
+          <span>New Serverless Computing</span>
+        </a>
+      </li><!-- End Register Page Nav -->
+
+      <li class="nav-item">
         <a class="nav-link collapsed" href="/logout">
           <i class="bi bi-power"></i>
           <span>Logout</span>
@@ -204,6 +211,17 @@
             <center><button type="button" class="btn btn-primary" onclick="goToPEMFiles()">Download PEM Files</button><br><br>
             </center>
             <center>Click to download PEM files of existing servers</center>
+          </div>
+        </div>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <div class="card" style="width: 18rem;">
+          <div class="card-body">
+            <br>
+            <center><img src="{{ url_for('static', filename='assets/img/serverless-computing.png') }}" height="175px" width="190px">
+            </center><br>
+            <center><button type="button" class="btn btn-primary" onclick="goToNewServerlessComputing()">New Serverless Computing</button><br><br>
+            </center>
+            <center>Click to create new serverless computing service</center>
           </div>
         </div>
         <input type="hidden" id="dname" value="{{name}}">
