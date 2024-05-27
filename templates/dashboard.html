@@ -40,6 +40,9 @@
     function goToPEMFiles(){
       window.location.replace('pems');
     }
+    function goToNewServerlessComputing(){
+      window.location.replace('serverless');
+    }
     var accName;
     function hello() {
       $.ajax({
@@ -141,35 +144,35 @@
           <i class="bi bi-hdd-rack"></i>
           <span>My Servers</span>
         </a>
-      </li><!-- End Profile Page Nav -->
+      </li><!-- End My Server Page Nav -->
 
       <li class="nav-item">
         <a class="nav-link collapsed" href="/newVps">
           <i class="bi bi-database-add"></i>
           <span>New Server</span>
         </a>
-      </li><!-- End Profile Page Nav -->
+      </li><!-- End New Server Page Nav -->
 
       <li class="nav-item">
         <a class="nav-link collapsed" href="/pems">
           <i class="bi bi-file-earmark-easel"></i>
           <span>My PEM</span>
         </a>
-      </li><!-- End Register Page Nav -->
+      </li><!-- End My PEM Page Nav -->
 
       <li class="nav-item">
         <a class="nav-link collapsed" href="/serverless">
           <i class="bi bi-file-earmark-easel"></i>
           <span>New Serverless Computing</span>
         </a>
-      </li><!-- End Register Page Nav -->
+      </li><!-- End Serverless Computing Page Nav -->
 
       <li class="nav-item">
         <a class="nav-link collapsed" href="/logout">
           <i class="bi bi-power"></i>
           <span>Logout</span>
         </a>
-      </li><!-- End Register Page Nav -->
+      </li><!-- End Logout Page Nav -->
     </ul>
 
   </aside><!-- End Sidebar-->
@@ -217,7 +220,7 @@
         <div class="card" style="width: 18rem;">
           <div class="card-body">
             <br>
-            <center><img src="{{ url_for('static', filename='assets/img/serverless-computing.png') }}" height="175px" width="190px">
+            <center><img src="{{ url_for('static', filename='assets/img/serverless_01.png') }}" height="175px" width="190px">
             </center><br>
             <center><button type="button" class="btn btn-primary" onclick="goToNewServerlessComputing()">New Serverless Computing</button><br><br>
             </center>

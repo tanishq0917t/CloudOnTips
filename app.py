@@ -5,11 +5,56 @@ from createEC2 import CreateEC2
 from ConfigureEC2 import EC2Configurations
 from sendMail import SendMail
 import random
+import uuid
+import importlib
+import os
+import sys
 
 app = Flask(__name__)
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
+
+urls={}
+
+def loadURL():
+    connection=MongoCollection()
+    collection=connection.getCollection("ServerlessServices")
+    a=collection.find()
+    for i in a:
+        url=i['url']
+        data={
+            'user':i['user'],
+            'serviceName':i['serviceName'],
+            'functionName':i['functionName'],
+            'file':i['handlingFileName'],
+        }
+        urls[url]=data
+
+
+loadURL()
+print(urls)
+def createURLMapping():
+    url = str(uuid.uuid4()).split('-')[-1]
+    return f"/service/{url}"
+
+def dynamic_function_executor(module_name, function_name):
+    try:
+        module_path = os.path.dirname(module_name)
+        sys.path.append(module_path)
+        module_file = os.path.basename(module_name)
+        module_name_no_ext = os.path.splitext(module_file)[0]
+        module = importlib.import_module(module_name_no_ext)
+        func = getattr(module, function_name)
+        result=func()
+        return result
+    except ImportError:
+        return f"Module '{module_name}' not found."
+    except AttributeError:
+        return f"Function '{function_name}' not found in module '{module_name}'."
+    except Exception as e:
+        return f"An error occurred: {str(e)}"
+
 
 @app.route("/")
 def index():
@@ -34,6 +79,13 @@ def newVps():
 def pems():
     if not session.get("name"): return redirect("/login")
     return render_template("mypems.html")
+
+@app.route("/serverless")
+def serverless():
+    if not session.get("name"): return redirect("/login")
+    return render_template("serverless.html")
+
+
 
 @app.route("/getData",methods=['POST'])
 def getData():
@@ -174,6 +226,42 @@ def sendOtp():
         body=f"Hi {user},<br>Please find below OTP: {otp} for your login request.<br><br>Thanks & Regards<br>Cloud On Tips"
         sendEmail.mail(user,subject,body)
         return otp
+
+@app.route("/createServerlessService",methods=["POST"])
+def createServerlessService():
+    if request.method=="POST":
+        print(request.form)
+        print(request.files['file'])
+        user=request.form['user'].split('@')[0]
+        serviceName=request.form['serviceName']
+        functionName=request.form['functionName']
+        fName=request.files['file'].filename
+        request.files['file'].save(f"services/{user}/{fName}")
+        url=createURLMapping()
+        connection=MongoCollection()
+        collection=connection.getCollection("ServerlessServices")
+        data={
+            'user':request.form['user'],
+            'serviceName':serviceName,
+            'functionName':functionName,
+            'handlingFileName':fName,
+            'url':url
+        }
+        urls[url]=data
+        collection.insert_one(data)
+        return ""
+
+@app.route("/service/<random_value>")
+def service(random_value):
+    data=urls["/service/"+random_value]
+    moduleName=data['file']
+    functionName=data['functionName']
+    user=data['user'].split('@')[0]
+    response=dynamic_function_executor(f"services/{user}/{moduleName}",functionName)
+    return response
+
+
+
 
 
 if __name__ == '__main__':
