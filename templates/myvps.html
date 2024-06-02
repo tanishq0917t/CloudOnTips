@@ -163,23 +163,6 @@
             // Call performAction to show modal and handle subsequent actions
             performAction();
         }
-        // function deleteInstance(instanceName) {
-        //     tryModal();
-        //     alert(state);
-        //     // $("#loadingOverlay").show();
-        //     // $.ajax({
-        //     //     'url':'deleteInstance',
-        //     //     'type':'POST',
-        //     //     'data':{
-        //     //         'user':accName,
-        //     //         'vpsName':instanceName
-        //     //     },
-        //     //     'success':function(response){
-        //     //         $("#loadingOverlay").hide();
-        //     //         window.location.replace('myvps');
-        //     //     }
-        //     // });
-        // }
         function fillTable(name) {
             $("#loadingOverlay").show();
             $.ajax({
@@ -312,7 +295,7 @@
             <li class="nav-item">
               <a class="nav-link collapsed" href="/myvps">
                 <i class="bi bi-hdd-rack"></i>
-                <span>My Servers</span>
+                <span>My Services</span>
               </a>
             </li><!-- End My Server Page Nav -->
       
@@ -350,7 +333,7 @@
     <main id="main" class="main">
 
         <div class="pagetitle">
-            <h1>My VPS</h1>
+            <h1>My Services</h1>
         </div><!-- End Page Title -->
         <section class="section dashboard">
             <center>
@@ -364,6 +347,23 @@
                             <th scope="col" style="text-align: center;">Status</th>
                             <th scope="col" style="text-align: center;">Public IP Address</th>
                             <th scope="col" style="text-align: center;">PEM Name</th>
+                            <th scope="col" style="text-align: center;">Actions</th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                    </tbody>
+                </table>
+                <br>
+                <h2>List of Serverless Services</h2>
+                <table class="table table-hover" id="assTable">
+                    <thead>
+                        <tr>
+                            <th scope="col" style="text-align: center;">#</th>
+                            <th scope="col" style="text-align: center;">Service Name</th>
+                            <th scope="col" style="text-align: center;">Status</th>
+                            <th scope="col" style="text-align: center;">Service Type</th>
                             <th scope="col" style="text-align: center;">Actions</th>
 
                         </tr>

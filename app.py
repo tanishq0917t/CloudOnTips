@@ -23,12 +23,23 @@ def loadURL():
     a=collection.find()
     for i in a:
         url=i['url']
-        data={
-            'user':i['user'],
-            'serviceName':i['serviceName'],
-            'functionName':i['functionName'],
-            'file':i['handlingFileName'],
-        }
+        if i.get('tp'):
+            data={
+                'user':i['user'],
+                'serviceName':i['serviceName'],
+                'functionName':i['functionName'],
+                'file':i['handlingFileName'],
+                'req':i['req'],
+                'tp':i['tp']
+            }
+        else:
+            data={
+                'user':i['user'],
+                'serviceName':i['serviceName'],
+                'functionName':i['functionName'],
+                'file':i['handlingFileName'],
+                'req':i['req']
+            }
         urls[url]=data
 
 
@@ -38,7 +49,7 @@ def createURLMapping():
     url = str(uuid.uuid4()).split('-')[-1]
     return f"/service/{url}"
 
-def dynamic_function_executor(module_name, function_name):
+def dynamic_function_executor(module_name, function_name,inp, reqType):
     try:
         module_path = os.path.dirname(module_name)
         sys.path.append(module_path)
@@ -46,7 +57,7 @@ def dynamic_function_executor(module_name, function_name):
         module_name_no_ext = os.path.splitext(module_file)[0]
         module = importlib.import_module(module_name_no_ext)
         func = getattr(module, function_name)
-        result=func()
+        result=func(inp,reqType)
         return result
     except ImportError:
         return f"Module '{module_name}' not found."
@@ -237,28 +248,51 @@ def createServerlessService():
         functionName=request.form['functionName']
         fName=request.files['file'].filename
         request.files['file'].save(f"services/{user}/{fName}")
+        reqType=request.form['req']
         url=createURLMapping()
         connection=MongoCollection()
         collection=connection.getCollection("ServerlessServices")
-        data={
-            'user':request.form['user'],
-            'serviceName':serviceName,
-            'functionName':functionName,
-            'handlingFileName':fName,
-            'url':url
-        }
+        if reqType=="POST":
+            tp=request.form['tp']
+            data={
+                'user':request.form['user'],
+                'serviceName':serviceName,
+                'functionName':functionName,
+                'handlingFileName':fName,
+                'url':url,
+                'req':reqType,
+                'tp':tp
+            }
+        else:
+            data={
+                'user':request.form['user'],
+                'serviceName':serviceName,
+                'functionName':functionName,
+                'handlingFileName':fName,
+                'url':url,
+                'req':reqType
+            }
         urls[url]=data
         collection.insert_one(data)
         return ""
 
-@app.route("/service/<random_value>")
+@app.route("/service/<random_value>",methods=["GET","POST"])
 def service(random_value):
     data=urls["/service/"+random_value]
     moduleName=data['file']
     functionName=data['functionName']
     user=data['user'].split('@')[0]
-    response=dynamic_function_executor(f"services/{user}/{moduleName}",functionName)
-    return response
+    reqType=data['req']
+    if request.method=="POST" and reqType=="POST":    
+        tp=data['tp']
+        if tp=="JSON":
+            return dynamic_function_executor(f"services/{user}/"+moduleName,functionName,request.json,reqType)
+        elif tp=="FORMDATA":
+            return dynamic_function_executor(f"services/{user}/"+moduleName,functionName,request.form,reqType)
+    elif request.method=="GET" and reqType=="GET":
+        return dynamic_function_executor(f"services/{user}/"+moduleName,functionName,request.args,reqType)
+    else: return {"message":"Invalid request Type"}
+    
 
 
 

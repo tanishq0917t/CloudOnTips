@@ -35,6 +35,18 @@
         $(document).ready(function () {
             $("#loadingOverlay").hide();
         });
+        $(document).ready(function() {
+            function togglePostDataType() {
+                if ($('#req2').is(':checked')) {
+                    $('#pstDataType').show();
+                } else {
+                    $('#pstDataType').hide();
+                }
+            }
+            $('input[name="req"]').change(togglePostDataType);
+            togglePostDataType();
+        });
+
         document.addEventListener('DOMContentLoaded', function () {
             var fileDropArea = document.getElementById('file-drop-area');
             var fileInput = document.getElementById('file-input');
@@ -124,13 +136,24 @@
             if (document.getElementById("opt1").checked) lng = document.getElementById("opt1").value;
             else if (document.getElementById("opt2").checked) lng = document.getElementById("opt2").value;
             else lng = document.getElementById("opt3").value;
-            
+            var req=null;
+            if(document.getElementById("req1").checked) req = document.getElementById("req1").value;
+            else req=document.getElementById("req2").value;
             var fileInput=$('#file-input');
             var formData = new FormData();
             formData.append('serviceName',name);
             formData.append('functionName',functionName);
             formData.append('user',accName);
+            formData.append('req',req);
+            formData.append('lng',lng);
             formData.append('file', fileInput[0].files[0]);
+            if(req=="POST")
+            {
+                let tp;
+                if(document.getElementById("req3").checked) tp = document.getElementById("req3").value;
+                else tp=document.getElementById("req4").value; 
+                formData.append('tp',tp);
+            }
             $("#loadingOverlay").show();
             $.ajax({
                 'url':'createServerlessService',
@@ -299,50 +322,50 @@
         <ul class="sidebar-nav" id="sidebar-nav">
 
             <li class="nav-item">
-                <a class="nav-link " href="/">
-                    <i class="bi bi-grid"></i>
-                    <span>Dashboard</span>
-                </a>
+              <a class="nav-link " href="/">
+                <i class="bi bi-grid"></i>
+                <span>Dashboard</span>
+              </a>
             </li><!-- End Dashboard Nav -->
-
-
+      
+      
             <li class="nav-heading">Pages</li>
-
+      
             <li class="nav-item">
-                <a class="nav-link collapsed" href="/myvps">
-                    <i class="bi bi-hdd-rack"></i>
-                    <span>My Servers</span>
-                </a>
+              <a class="nav-link collapsed" href="/myvps">
+                <i class="bi bi-hdd-rack"></i>
+                <span>My Services</span>
+              </a>
             </li><!-- End My Server Page Nav -->
-
+      
             <li class="nav-item">
-                <a class="nav-link collapsed" href="/newVps">
-                    <i class="bi bi-database-add"></i>
-                    <span>New Server</span>
-                </a>
+              <a class="nav-link collapsed" href="/newVps">
+                <i class="bi bi-database-add"></i>
+                <span>New Server</span>
+              </a>
             </li><!-- End New Server Page Nav -->
-
+      
             <li class="nav-item">
-                <a class="nav-link collapsed" href="/pems">
-                    <i class="bi bi-file-earmark-easel"></i>
-                    <span>My PEM</span>
-                </a>
+              <a class="nav-link collapsed" href="/pems">
+                <i class="bi bi-file-earmark-easel"></i>
+                <span>My PEM</span>
+              </a>
             </li><!-- End My PEM Page Nav -->
-
+      
             <li class="nav-item">
-                <a class="nav-link collapsed" href="/serverless">
-                    <i class="bi bi-file-earmark-easel"></i>
-                    <span>New Serverless Computing</span>
-                </a>
+              <a class="nav-link collapsed" href="/serverless">
+                <i class="bi bi-file-earmark-easel"></i>
+                <span>New Serverless Computing</span>
+              </a>
             </li><!-- End Serverless Computing Page Nav -->
-
+      
             <li class="nav-item">
-                <a class="nav-link collapsed" href="/logout">
-                    <i class="bi bi-power"></i>
-                    <span>Logout</span>
-                </a>
+              <a class="nav-link collapsed" href="/logout">
+                <i class="bi bi-power"></i>
+                <span>Logout</span>
+              </a>
             </li><!-- End Logout Page Nav -->
-        </ul>
+          </ul>
 
     </aside><!-- End Sidebar-->
 
@@ -375,6 +398,36 @@
                 <label class="form-check-label">
                     Java
                 </label>
+            </div>
+            <br>
+            <b>Entry point request type (Required)</b><br>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="req" id="req1" value="GET" checked>
+                <label class="form-check-label">
+                    GET
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="req" id="req2" value="POST">
+                <label class="form-check-label">
+                    POST
+                </label>
+            </div>
+            <br>
+            <div id="pstDataType" style="display: none;">
+                <b>Request Data Type (Required)</b><br>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="postDataType" id="req3" value="JSON" checked>
+                <label class="form-check-label">
+                    JSON
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="postDataType" id="req4" value="FORMDATA">
+                <label class="form-check-label">
+                    Form Data
+                </label>
+            </div>
             </div>
             <div class="container mt-5">
                 <div class="row justify-content-left">
