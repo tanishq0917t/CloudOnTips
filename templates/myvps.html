@@ -170,6 +170,12 @@
                 'type': 'POST',
                 'data': { 'user': name },
                 'success': function (response) {
+                    var services=response['services']
+                    for(let i=0;i<services.length;i++)
+                    {
+                        //serviceTable
+                        $("#serviceTable tbody").append("<tr><td scope='col' style='text-align: center;'>"+(i+1)+"</td><td scope='col' style='text-align: center;'>"+services[i]['serviceName']+"</td><td scope='col' style='text-align: center;'>"+services[i]['url']+"</td><td scope='col' style='text-align: center;'>"+services[i]['req']+"</td><td scope='col' style='text-align: center;'>Actions</td></tr>");
+                    }
                     response = response['pems']
                     for (let i = 0; i < response.length; i++) {
                         let status = response[i]['status'];
@@ -357,15 +363,14 @@
                 </table>
                 <br>
                 <h2>List of Serverless Services</h2>
-                <table class="table table-hover" id="assTable">
+                <table class="table table-hover" id="serviceTable">
                     <thead>
                         <tr>
                             <th scope="col" style="text-align: center;">#</th>
                             <th scope="col" style="text-align: center;">Service Name</th>
-                            <th scope="col" style="text-align: center;">Status</th>
+                            <th scope="col" style="text-align: center;">URL</th>
                             <th scope="col" style="text-align: center;">Service Type</th>
                             <th scope="col" style="text-align: center;">Actions</th>
-
                         </tr>
                     </thead>
                     <tbody>

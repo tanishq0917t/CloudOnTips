@@ -183,7 +183,17 @@ def getVPSData():
             d['publicIP']=i['publicIP']
             lst.append(d)
         print("sending data")
-        return {'pems':lst}
+        collection=connection.getCollection("ServerlessServices")
+        services=collection.find({'user':user})
+        lst1=[]
+        for i in services:
+            d=dict()
+            d['serviceName']=i['serviceName']
+            d['functionName']=i['functionName']
+            d['url']=i['url']
+            d['req']=i['req']
+            lst1.append(d)
+        return {'pems':lst,'services':lst1}
 
 
 @app.route("/stopInstance",methods=["POST"])
