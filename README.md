@@ -19,3 +19,6 @@ While creating the VPS, CloudOnTips mails the PEM file and credentials to the us
 
 ### What controls do the user have on the services?
 User can start, stop, terminate, check status of any of the services from the portal itself.
+
+### Simple form which can create a VPS in a single click
+<img src="https://github.com/tanishq0917t/CloudOnTips/blob/main/Django_Based/static/img/createVPS.png" height="500px" width="556px" />
