@@ -13,7 +13,7 @@ def serverless(request):
 def configureNewVPS(request):
     if request.method=="POST":
         print(request.POST.getlist('list[]'))
-        #Write the code to fetch form 
+        #Write the code to fetch form and initiate a celery task
         return JsonResponse({'status':'success','message':'Done'})
     else:
         return JsonResponse({'status':'error','message':'Not Done'})
