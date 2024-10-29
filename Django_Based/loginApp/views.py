@@ -23,7 +23,7 @@ def otp(request):
             sessionOTP=request.session['otp_for_verification']
             if userOTP==sessionOTP:
                 request.session['otp_for_verification']=None
-                request.session['user']='user'
+                request.session['user']='tanishq091710'
                 return redirect('dashboard')
             else:
                 request.session['otp_for_verification']=None

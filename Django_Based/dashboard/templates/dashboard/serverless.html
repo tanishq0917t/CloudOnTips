@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+    <title>Dashboard</title>
+    <meta content="" name="description">
+    <meta content="" name="keywords">
+    {% load static %}
+    <script src="{% static 'js/core.min.js' %}"></script>
+    <!-- Favicons -->
+    <link href="{% static 'img/favicon.png' %}" rel="icon">
+    <link href="{% static 'img/apple-touch-icon.png' %}" rel="apple-touch-icon">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.gstatic.com" rel="preconnect">
+    <link
+        href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i"
+        rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <!-- Vendor CSS Files -->
+    <link href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'vendor/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet">
+    <link href="{% static 'vendor/boxicons/css/boxicons.min.css' %}" rel="stylesheet">
+    <link href="{% static 'vendor/quill/quill.snow.css' %}" rel="stylesheet">
+    <link href="{% static 'vendor/quill/quill.bubble.css' %}" rel="stylesheet">
+    <link href="{% static 'vendor/remixicon/remixicon.css' %}" rel="stylesheet">
+    <link href="{% static 'vendor/simple-datatables/style.css' %}" rel="stylesheet">
+
+    <!-- Template Main CSS File -->
+    <link href="{% static 'css/style1.css' %}" rel="stylesheet">
+    <script>
+        var accName;
+        $(document).ready(function () {
+            $("#loadingOverlay").hide();
+        });
+        $(document).ready(function() {
+            function togglePostDataType() {
+                if ($('#req2').is(':checked')) {
+                    $('#pstDataType').show();
+                } else {
+                    $('#pstDataType').hide();
+                }
+            }
+            $('input[name="req"]').change(togglePostDataType);
+            togglePostDataType();
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            var fileDropArea = document.getElementById('file-drop-area');
+            var fileInput = document.getElementById('file-input');
+            var browseButton = document.getElementById('browse-button');
+            var fileInfo = document.getElementById('file-info');
+
+            browseButton.addEventListener('click', function () {
+                fileInput.click();
+            });
+
+            fileDropArea.addEventListener('dragover', function (event) {
+                event.preventDefault();
+                fileDropArea.classList.add('dragover');
+            });
+
+            fileDropArea.addEventListener('dragleave', function () {
+                fileDropArea.classList.remove('dragover');
+            });
+
+            fileDropArea.addEventListener('drop', function (event) {
+                event.preventDefault();
+                fileDropArea.classList.remove('dragover');
+                var files = event.dataTransfer.files;
+                if (files.length > 0) {
+                    validateAndHandleFile(files[0]);
+                }
+            });
+
+            fileInput.addEventListener('change', function () {
+                var files = fileInput.files;
+                if (files.length > 0) {
+                    validateAndHandleFile(files[0]);
+                }
+            });
+
+            function validateAndHandleFile(file) {
+                var allowedExtensions = /(\.py|\.cpp|\.java)$/i;
+                if (!allowedExtensions.exec(file.name)) {
+                    fileInfo.innerHTML = '<p class="text-danger">Invalid file type. Please upload a .py, .cpp, or .java file.</p>';
+                    fileInput.value = ''; // Clear the input
+                    return;
+                }
+                fileInfo.innerHTML = '<p>File Name: ' + file.name + '</p>' +
+                    '<p>File Size: ' + file.size + ' bytes</p>' +
+                    '<p>File Type: ' + file.type + '</p>';
+            }
+        });
+        function hello() {
+            //Get user Data
+            $.ajax({
+                'url': 'getData',
+                'type': 'POST',
+                'success': function (response) {
+                    accName = response;
+                    document.getElementById("accName").innerHTML = accName;
+                },
+                'error': function (response) {
+                    console.log(response);
+                }
+            });
+        }
+        function showNotification() {
+            var notification = document.getElementById("notification");
+            notification.style.display = "block";
+            notification.classList.add("animated");
+            setTimeout(function () {
+                notification.style.display = "none";
+                notification.classList.remove("animated");
+                setTimeout(function () {
+                    window.location.replace("/");
+                }, 1000);
+            }, 2000); // Hide after 3 seconds
+
+        }
+        function createServerlessService() {
+            var name = document.getElementById("serviceName").value.trim();
+            if (name.length == 0) {
+                alert("Service name is required");
+                return;
+            }
+            var functionName = document.getElementById("functionName").value.trim();
+            if (functionName.length == 0) {
+                alert("Handler function name is required");
+                return;
+            }
+            var lng = null;
+            if (document.getElementById("opt1").checked) lng = document.getElementById("opt1").value;
+            else if (document.getElementById("opt2").checked) lng = document.getElementById("opt2").value;
+            else lng = document.getElementById("opt3").value;
+            var req=null;
+            if(document.getElementById("req1").checked) req = document.getElementById("req1").value;
+            else req=document.getElementById("req2").value;
+            var fileInput=$('#file-input');
+            var formData = new FormData();
+            formData.append('serviceName',name);
+            formData.append('functionName',functionName);
+            formData.append('user',accName);
+            formData.append('req',req);
+            formData.append('lng',lng);
+            formData.append('file', fileInput[0].files[0]);
+            if(req=="POST")
+            {
+                let tp;
+                if(document.getElementById("req3").checked) tp = document.getElementById("req3").value;
+                else tp=document.getElementById("req4").value; 
+                formData.append('tp',tp);
+            }
+            $("#loadingOverlay").show();
+            $.ajax({
+                'url':'createServerlessService',
+                'type':'POST',
+                'data':formData,
+                'processData': false,
+                'contentType': false,
+                'success':function(response){
+                    $("#loadingOverlay").hide();
+                    showNotification();
+                }
+            });
+        }
+    </script>
+    <style>
+        .notification {
+            position: fixed;
+            top: 50px;
+            /* Adjust this value for padding from the top */
+            left: 40%;
+            transform: translateX(-50%);
+            z-index: 1050;
+            max-width: 400px;
+            padding: 15px;
+            border-radius: 10px;
+            background-color: #4CAF50;
+            color: white;
+            display: none;
+        }
+
+        .notification-content {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .notification.animated {
+            animation: slideDown 0.5s ease-out forwards;
+        }
+
+        @keyframes slideDown {
+            0% {
+                transform: translateY(-100%);
+            }
+
+            100% {
+                transform: translateY(0);
+            }
+        }
+
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            /* Semi-transparent black overlay */
+            z-index: 9999;
+            /* Ensure overlay is on top of other content */
+        }
+
+        .loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10000;
+            /* Ensure loading GIF is on top of overlay */
+        }
+
+        .file-drop-area {
+            border: 2px dashed #007bff;
+            padding: 20px;
+            text-align: left;
+            cursor: pointer;
+            color: #007bff;
+            border-radius: 5px;
+        }
+
+        .file-drop-area.dragover {
+            background-color: #e9ecef;
+        }
+    </style>
+</head>
+
+<body onload="hello()">
+    <div class="notification" id="notification">
+        <div class="container notification-content">
+            Request Service Created
+        </div>
+    </div>
+
+    <div id="loadingOverlay" class="loading-overlay">
+        <!-- Loading GIF -->
+        <div class="loading">
+            <img src="static/img/ll.gif" alt="Loading..." />
+        </div>
+    </div>
+
+    <!-- ======= Header ======= -->
+    <header id="header" class="header fixed-top d-flex align-items-center">
+
+        <div class="d-flex align-items-center justify-content-between">
+            <a href="/" class="logo d-flex align-items-center">
+                <img src="{% static 'img/IPLogo.png' %}" alt="">
+                <span class="d-none d-lg-block">Cloud on Tips</span>
+            </a>
+            <i class="bi bi-list toggle-sidebar-btn"></i>
+        </div><!-- End Logo -->
+
+
+
+        <nav class="header-nav ms-auto">
+            <ul class="d-flex align-items-center">
+                <li class="nav-item dropdown pe-3">
+
+                    <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
+                        <img src="{% static 'img/userProfile.png' %}" alt="Profile"
+                            class="rounded-circle">
+                        <span class="d-none d-md-block dropdown-toggle ps-2" id="accName"></span>
+                    </a><!-- End Profile Iamge Icon -->
+
+                    <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
+                        <li>
+                            <a class="dropdown-item d-flex align-items-center" href="/profile">
+                                <i class="bi bi-person"></i>
+                                <span>My Profile</span>
+                            </a>
+                        </li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+
+                        <li>
+                            <a class="dropdown-item d-flex align-items-center" href="/profile">
+                                <i class="bi bi-gear"></i>
+                                <span>Account Settings</span>
+                            </a>
+                        </li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+
+                        <li>
+                            <a class="dropdown-item d-flex align-items-center" href="/logout">
+                                <i class="bi bi-box-arrow-right"></i>
+                                <span>Sign Out</span>
+                            </a>
+                        </li>
+
+                    </ul><!-- End Profile Dropdown Items -->
+                </li><!-- End Profile Nav -->
+
+            </ul>
+        </nav><!-- End Icons Navigation -->
+
+    </header><!-- End Header -->
+
+    <!-- ======= Sidebar ======= -->
+    <aside id="sidebar" class="sidebar">
+
+        <ul class="sidebar-nav" id="sidebar-nav">
+
+            <li class="nav-item">
+              <a class="nav-link " href="/">
+                <i class="bi bi-grid"></i>
+                <span>Dashboard</span>
+              </a>
+            </li><!-- End Dashboard Nav -->
+      
+      
+            <li class="nav-heading">Pages</li>
+      
+            <li class="nav-item">
+              <a class="nav-link collapsed" href="/myvps">
+                <i class="bi bi-hdd-rack"></i>
+                <span>My Services</span>
+              </a>
+            </li><!-- End My Server Page Nav -->
+      
+            <li class="nav-item">
+              <a class="nav-link collapsed" href="/newVps">
+                <i class="bi bi-database-add"></i>
+                <span>New Server</span>
+              </a>
+            </li><!-- End New Server Page Nav -->
+      
+            <li class="nav-item">
+              <a class="nav-link collapsed" href="/pems">
+                <i class="bi bi-file-earmark-easel"></i>
+                <span>My PEM</span>
+              </a>
+            </li><!-- End My PEM Page Nav -->
+      
+            <li class="nav-item">
+              <a class="nav-link collapsed" href="/serverless">
+                <i class="bi bi-file-earmark-easel"></i>
+                <span>New Serverless Computing</span>
+              </a>
+            </li><!-- End Serverless Computing Page Nav -->
+      
+            <li class="nav-item">
+              <a class="nav-link collapsed" href="/logout">
+                <i class="bi bi-power"></i>
+                <span>Logout</span>
+              </a>
+            </li><!-- End Logout Page Nav -->
+          </ul>
+
+    </aside><!-- End Sidebar-->
+
+    <main id="main" class="main">
+
+        <div class="pagetitle">
+            <h1>Create a new Serverless Computing Service</h1>
+        </div><!-- End Page Title -->
+        <section class="section dashboard">
+            <b>Note: Service will be created and end url will be shared via email, also available in the My Services Panel !!</b><br><br>
+            <div class="col-sm-2">
+                <b>Service Name : *</b> <input type="text" class="form-control" id="serviceName" placeholder="Enter Service Name"><br>
+                <b>Handler Function Name : *</b> <input type="text" class="form-control" id="functionName" placeholder="Enter Function Name"><br>
+            </div>
+            <b>Choose Source file language (Required)</b><br>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="lng" id="opt1" value="Python" checked>
+                <label class="form-check-label">
+                    Python
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="lng" id="opt2" value="C++">
+                <label class="form-check-label">
+                    C++
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="lng" id="opt3" value="Java">
+                <label class="form-check-label">
+                    Java
+                </label>
+            </div>
+            <br>
+            <b>Entry point request type (Required)</b><br>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="req" id="req1" value="GET" checked>
+                <label class="form-check-label">
+                    GET
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="req" id="req2" value="POST">
+                <label class="form-check-label">
+                    POST
+                </label>
+            </div>
+            <br>
+            <div id="pstDataType" style="display: none;">
+                <b>Request Data Type (Required)</b><br>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="postDataType" id="req3" value="JSON" checked>
+                <label class="form-check-label">
+                    JSON
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="postDataType" id="req4" value="FORMDATA">
+                <label class="form-check-label">
+                    Form Data
+                </label>
+            </div>
+            </div>
+            <div class="container mt-5">
+                <div class="row justify-content-left">
+                    <div class="col-md-6">
+                        <div class="file-drop-area" id="file-drop-area">
+                            <span class="font-weight-bold">Drag & Drop your source file here or </span>
+                            <input type="file" id="file-input" hidden accept=".py,.cpp,.java">
+                            <button type="button" class="btn btn-primary" id="browse-button">Browse</button>
+                        </div>
+                        <div class="mt-3" id="file-info"></div>
+                    </div>
+                </div>
+            </div>
+            <br>
+            <button type="button" class="btn btn-primary" onclick="createServerlessService()">Launch Service</button>
+        </section>
+    </main><!-- End #main -->
+
+
+
+    <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+    <!-- Template Main JS File -->
+    <script src="{% static 'js/main.js' %}"></script>
+
+</body>
+
+</html>
