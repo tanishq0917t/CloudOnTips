@@ -43,18 +43,6 @@
     </div>
     <!-- Login 9 - Bootstrap Brain Component -->
     <section class="bg-primary py-8 py-md-5 py-xl-8">
-        {% if messages %}
-<div class="container mt-4">
-    {% for message in messages %}
-        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-            {{ message }}
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-    {% endfor %}
-</div>
-{% endif %}
         <div class="container">
             <div class="row gy-4 align-items-center">
                 <div class="col-12 col-md-6 col-xl-7">
@@ -88,8 +76,10 @@
                                     </div>
                                 </div>
                             </div>
-                            {% if error %}
-                                <p style="color:red">{{error}}</p>
+                            {% if messages %}
+                                {% for message in messages %}
+                                    <p style="color:red">{{message}}</p>
+                                {% endfor %}
                             {% endif %}
                             <form action="login/" method="POST">
                                 {% csrf_token %}
