@@ -1,7 +1,10 @@
-flask_session/
-__pycache__/
-config.json
-temp.py
-pems/
-sendMail.py
-services/
+Flask_Based/flask_session/
+Flask_Based/__pycache__/
+Flask_Based/config.json
+Flask_Based/temp.py
+Flask_Based/pems/
+Flask_Based/sendMail.py
+Flask_Based/services/
+Django_Based/db.sqlite3
+Django_Based/dump.rdb
+Django_Based/CloudOnTips/settings.py

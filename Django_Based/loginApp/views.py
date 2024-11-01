@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
+from django.contrib.auth.models import User
 from .tasks import send_html_email
 from django.http import HttpResponse
 import random
@@ -46,7 +47,8 @@ def _login(request):
             request.session['otp_username']=username
             print(f"Setting username for otp: {request.session['otp_username']}")
             print(f"Generated OTP: {otp}")
-            send_html_email.delay(otp)
+            email=User.objects.get(username=username).email
+            send_html_email.delay(otp,email)
             return redirect('/otp') 
         else:
             messages.error(request, 'Invalid Credentials, Please login again')
