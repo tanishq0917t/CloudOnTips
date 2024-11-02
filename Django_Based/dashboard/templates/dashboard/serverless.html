@@ -95,20 +95,6 @@
                     '<p>File Type: ' + file.type + '</p>';
             }
         });
-        function hello() {
-            //Get user Data
-            $.ajax({
-                'url': 'getData',
-                'type': 'POST',
-                'success': function (response) {
-                    accName = response;
-                    document.getElementById("accName").innerHTML = accName;
-                },
-                'error': function (response) {
-                    console.log(response);
-                }
-            });
-        }
         function showNotification() {
             var notification = document.getElementById("notification");
             notification.style.display = "block";
@@ -275,7 +261,7 @@
                     <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
                         <img src="{% static 'img/userProfile.png' %}" alt="Profile"
                             class="rounded-circle">
-                        <span class="d-none d-md-block dropdown-toggle ps-2" id="accName"></span>
+                        <span class="d-none d-md-block dropdown-toggle ps-2" id="accName">{{user}}</span>
                     </a><!-- End Profile Iamge Icon -->
 
                     <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
