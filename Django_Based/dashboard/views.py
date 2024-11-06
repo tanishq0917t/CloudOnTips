@@ -22,8 +22,8 @@ def configureNewVPS(request):
             'serverSoftwares':request.POST.getlist('list[]'),
             'user':request.session.get('user')
         }
-        create_EC2.delay(data)
+        idd=create_EC2.delay(data).id
         #Write the code to fetch form and initiate a celery task
-        return JsonResponse({'status':os.getenv('ACCESS_KEY'),'message':os.getenv('SECRET_KEY')})
+        return JsonResponse({'status':os.getenv('ACCESS_KEY'),'message':idd})
     else:
         return JsonResponse({'status':'error','message':'Not Done'})

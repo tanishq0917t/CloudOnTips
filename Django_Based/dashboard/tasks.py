@@ -1,10 +1,9 @@
 from celery import shared_task
 import boto3
 import os
+from django.conf import settings
 
 
-
-#Below code has to be modified as per Django's configurations. Currently it is copied from the flask folder
 @shared_task
 def create_EC2(data):
     aws_access_key_id=os.getenv('ACCESS_KEY')
@@ -30,11 +29,11 @@ def create_EC2(data):
             }
         }]
     
-    #----> Need to handle media files at the django end, also need to make sure the files are saved properly as they are highly confidential.
 
     #Creating PEM file
     key_pair_response = ec2.create_key_pair(KeyName=key_name)
-    pem_file_path = f"pems/{data['user'].split('@')[0]}/{key_name}.pem"
+    static_folder = os.path.join(settings.BASE_DIR, 'static')
+    pem_file_path = os.path.join(static_folder, f"pems/{data['user']}/{key_name}.pem")
     with open(pem_file_path, "w") as pem_file:
         pem_file.write(key_pair_response['KeyMaterial'])
     
