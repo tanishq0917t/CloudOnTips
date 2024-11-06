@@ -8,7 +8,7 @@ For Severless Computing Services, user can upload their source with the entrypoi
 ### Tech Stack Used
 <ul>
   <li>Backend-: Django, Flask, Boto3 (AWS SDK)</li>
-  <li>Frontend-: HTML, CSS, JS, jQuery, Bootstarp</li>
+  <li>Frontend-: HTML, CSS, JS, jQuery, Bootstrap</li>
   <li>Database-: Postgres, MongoDB</li>
   <li>Other Frameworks-: Celery (for Asynchronous execution of time taking tasks)</li>
   <li>Message Broker-: Redis</li>
