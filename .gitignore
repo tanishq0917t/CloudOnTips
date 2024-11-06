@@ -8,3 +8,6 @@ Flask_Based/services/
 Django_Based/db.sqlite3
 Django_Based/dump.rdb
 Django_Based/CloudOnTips/settings.py
+Django_Based/CloudOnTips/__pycache__/
+Django_Based/loginApp/__pycache__/
+Django_Based/dashboard/__pycache__/
