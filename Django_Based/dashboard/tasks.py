@@ -12,11 +12,15 @@ def create_EC2(data):
     region = 'ap-south-1'
     instance_type=None
     ami_id=None
+    
+    #Setting up the configurations for EC2 Instance
+    
     if data['serverType']=="micro": instance_type = 't2.micro'
     ami_id = data['serverOS']
     key_name = f"{data['serverName']}-key-pair"
     security_group_ids = ['launch-wizard-1']
     volume_size = int(data['serverStorage'])
+
     ec2 = boto3.client('ec2', region_name=region,aws_access_key_id=aws_access_key_id,aws_secret_access_key=aws_secret_access_key)
     block_device_mappings = [{
             'DeviceName': '/dev/xvda',
@@ -25,10 +29,16 @@ def create_EC2(data):
                 'VolumeType': 'gp2'
             }
         }]
+    
+    #----> Need to handle media files at the django end, also need to make sure the files are saved properly as they are highly confidential.
+
+    #Creating PEM file
     key_pair_response = ec2.create_key_pair(KeyName=key_name)
     pem_file_path = f"pems/{data['user'].split('@')[0]}/{key_name}.pem"
     with open(pem_file_path, "w") as pem_file:
         pem_file.write(key_pair_response['KeyMaterial'])
+    
+    #Starting the instance (Fresh Start)
     instance_response = ec2.run_instances(
         ImageId=ami_id,
         InstanceType=instance_type,

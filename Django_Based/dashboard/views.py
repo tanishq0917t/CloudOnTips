@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse,JsonResponse
 import os
+from .tasks import create_EC2
 
 def dashboard(request):
     return render(request,'dashboard/dashboard.html',{'user':request.session.get('user')})
@@ -13,7 +14,15 @@ def serverless(request):
 
 def configureNewVPS(request):
     if request.method=="POST":
-        print(request.POST.getlist('list[]'))
+        data={
+            'serverName':request.POST['name'],
+            'serverStorage':request.POST['storage'],
+            'serverOS':request.POST['os'],
+            'serverType':request.POST['inst'],
+            'serverSoftwares':request.POST.getlist('list[]'),
+            'user':request.session.get('user')
+        }
+        create_EC2.delay(data)
         #Write the code to fetch form and initiate a celery task
         return JsonResponse({'status':os.getenv('ACCESS_KEY'),'message':os.getenv('SECRET_KEY')})
     else:
