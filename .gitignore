@@ -11,3 +11,5 @@ Django_Based/CloudOnTips/settings.py
 Django_Based/CloudOnTips/__pycache__/
 Django_Based/loginApp/__pycache__/
 Django_Based/dashboard/__pycache__/
+.DS_Store
+Django_Based/.DS_Store
