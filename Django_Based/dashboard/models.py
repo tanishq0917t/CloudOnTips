@@ -7,5 +7,6 @@ class vps_details(models.Model):
     os=models.CharField()
     type=models.CharField()
     user=models.CharField()
-
+    task_id=models.CharField(default='None')
+    status=models.CharField(default='Stopped')
 

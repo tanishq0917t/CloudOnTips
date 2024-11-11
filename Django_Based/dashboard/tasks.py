@@ -1,11 +1,18 @@
 from celery import shared_task
 import boto3
 import os
+import time
 from django.conf import settings
 
 
 @shared_task
 def create_EC2(data):
+    time.sleep(10)
+    return "Hello"
+
+
+@shared_task
+def _create_EC2(data):
     aws_access_key_id=os.getenv('ACCESS_KEY')
     aws_secret_access_key=os.getenv('SECRET_KEY')
     region = 'ap-south-1'
