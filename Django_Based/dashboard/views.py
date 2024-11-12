@@ -14,7 +14,7 @@ def serverless(request):
     return render(request,'dashboard/serverless.html',{'user':request.session.get('user')})
 
 def myvps(request):
-    vps=vps_details.objects.all()
+    vps=vps_details.objects.filter(user=request.session.get('user'))
     print(vps)
     return render(request,'dashboard/myvps.html',{'user':request.session.get('user'),'vps':vps})
 
