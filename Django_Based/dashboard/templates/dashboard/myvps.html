@@ -8,6 +8,7 @@
     <title>Dashboard</title>
     <meta content="" name="description">
     <meta content="" name="keywords">
+    <meta http-equiv="refresh" content="5">
     {% load static %}
     <script src="{% static 'js/core.min.js' %}"></script>
     <!-- Favicons -->
@@ -317,8 +318,8 @@
                             <td scope="col" style="text-align: center;">{{vp.name}}</td>
                             <td scope="col" style="text-align: center;">{{vp.os}}</td>
                             <td scope="col" style="text-align: center;">{{vp.status}}</td>
-                            <td scope="col" style="text-align: center;">Public IP Address</td>
-                            <td scope="col" style="text-align: center;">PEM Name</td>
+                            <td scope="col" style="text-align: center;">{{vp.ip_addr}}</td>
+                            <td scope="col" style="text-align: center;">{{vp.pem_name}}</td>
                             <td scope="col" style="text-align: center;">Actions</td>
                         </tr>
                     {% endfor %}

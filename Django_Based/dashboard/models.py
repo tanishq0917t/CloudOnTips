@@ -9,4 +9,5 @@ class vps_details(models.Model):
     user=models.CharField()
     task_id=models.CharField(default='None')
     status=models.CharField(default='Stopped')
-
+    ip_addr=models.CharField(default='-')
+    pem_name=models.CharField(default='-')

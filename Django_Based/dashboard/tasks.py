@@ -3,16 +3,16 @@ import boto3
 import os
 import time
 from django.conf import settings
-
+from .models import vps_details
 
 @shared_task
-def create_EC2(data):
+def _create_EC2(data):
     time.sleep(10)
     return "Hello"
 
 
 @shared_task
-def _create_EC2(data):
+def create_EC2(data):
     aws_access_key_id=os.getenv('ACCESS_KEY')
     aws_secret_access_key=os.getenv('SECRET_KEY')
     region = 'ap-south-1'
@@ -71,4 +71,9 @@ def _create_EC2(data):
     instance_info = ec2.describe_instances(InstanceIds=lst)
     instance = instance_info['Reservations'][0]['Instances'][0]
     public_ip = instance.get('PublicIpAddress')
+    vps=vps_details.objects.get(name=data['serverName'],user=data['user'])
+    vps.status="Running"
+    vps.ip_addr=public_ip
+    vps.pem_name=key_name
+    vps.save()
     return (instance_id,public_ip)
