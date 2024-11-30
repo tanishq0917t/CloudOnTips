@@ -34,3 +34,14 @@ def configureNewVPS(request):
         return JsonResponse({'status':os.getenv('ACCESS_KEY'),'message':idd})
     else:
         return JsonResponse({'status':'error','message':'Not Done'})
+    
+
+def pems(request):
+    return render(request,'dashboard/pems.html',{'user':request.session.get('user')})
+
+def getPemNames(request):
+    if request.method=="POST":
+        user=request.session.get('user')
+        pems=list(vps_details.objects.filter(user=user).values())
+        print(pems)
+        return JsonResponse({'pems':pems})

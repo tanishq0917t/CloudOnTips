@@ -148,11 +148,11 @@
     </script>
 </head>
 
-<body onload="hello()">
+<body>
     <div id="loadingOverlay" class="loading-overlay">
         <!-- Loading GIF -->
         <div class="loading">
-            <img src="static/'img/ll.gif" alt="Loading..." />
+            <img src="{% static 'img/ll.gif' %}" alt="Loading..." />
         </div>
     </div>
     <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true"
